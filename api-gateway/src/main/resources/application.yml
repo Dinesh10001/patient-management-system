@@ -1,0 +1,44 @@
+server:
+  port: 8004 # Gateway listens on port 8004
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service-route
+          uri: http://auth-service:8005
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+
+        # Route for /api/patients/** to patient-service
+        ## REST Client -> http://localhost:8004/api/patients
+        ## API Gateway -> http://patient-service:8000/patients
+        ## strip prefix filter will remove /api/ from url
+
+        - id: patient-service-route
+          uri: http://patient-service:8000
+          predicates:
+            - Path=/api/patients/**
+          filters:
+            - StripPrefix=1
+            - JwtValidation
+
+        # Route for /api/docs/patients to patient-service /v3/api-docs
+        ## REST Client -> http://localhost:8004/api-docs/patients
+        ## API Gateway -> http://patient-service:8000/v3/api-docs
+
+        - id: api-docs-patient-route
+          uri: http://patient-service:8000
+          predicates:
+            - Path=/api-docs/patients
+          filters:
+            - RewritePath=/api-docs/patients,/v3/api-docs
+
+        - id: api-docs-auth-route
+          uri: http://auth-service:8005
+          predicates:
+            - Path=/api-docs/auth
+          filters:
+            - RewritePath=/api-docs/auth,/v3/api-docs
