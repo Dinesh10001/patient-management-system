@@ -25,7 +25,7 @@ public class JwtValidationGatewayFilterFactory extends
         return (exchange, chain) -> {
             String token =
                     exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-
+            System.out.println("token:- "+ token);
             if(token == null || !token.startsWith("Bearer ")) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();

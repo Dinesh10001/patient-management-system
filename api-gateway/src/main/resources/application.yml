@@ -1,12 +1,12 @@
 server:
-  port: 8004 # Gateway listens on port 8004
+  port: 8000 # Gateway listens on port 8000
 
 spring:
   cloud:
     gateway:
       routes:
         - id: auth-service-route
-          uri: http://auth-service:8005
+          uri: http://auth-service:8001
           predicates:
             - Path=/auth/**
           filters:
@@ -18,7 +18,7 @@ spring:
         ## strip prefix filter will remove /api/ from url
 
         - id: patient-service-route
-          uri: http://patient-service:8000
+          uri: http://patient-service:8002
           predicates:
             - Path=/api/patients/**
           filters:
@@ -30,14 +30,14 @@ spring:
         ## API Gateway -> http://patient-service:8000/v3/api-docs
 
         - id: api-docs-patient-route
-          uri: http://patient-service:8000
+          uri: http://patient-service:8002
           predicates:
             - Path=/api-docs/patients
           filters:
             - RewritePath=/api-docs/patients,/v3/api-docs
 
         - id: api-docs-auth-route
-          uri: http://auth-service:8005
+          uri: http://auth-service:8001
           predicates:
             - Path=/api-docs/auth
           filters:
